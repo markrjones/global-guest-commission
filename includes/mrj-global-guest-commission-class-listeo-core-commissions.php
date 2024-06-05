@@ -125,8 +125,6 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 		$options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
 		$guest_commission_rate = (float) $options['percentage'];
 		$amount_before_site_fee = $order_total / (1 + $guest_commission_rate / 100);
-        //$guest_commission_value = $order_total - $originalAmount . "\n";
-		error_log("final total: " . $amount_before_site_fee);
 
 		//get order value before tax
 		//$order_total = $order_total - $order_data['total_tax'];

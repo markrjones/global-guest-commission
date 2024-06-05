@@ -731,7 +731,7 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
         }
 
         // MRJ - We add another output to the response, showing the amount of commission
-        $options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 10 ));
+        $options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
 		$pctcommission = (int) $options['percentage'];
         $original_price = $price / (1 + ($pctcommission / 100));
         $commission_amount = $price - $original_price;
@@ -1219,15 +1219,17 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
         $result = array();
         $template_loader = new Listeo_Core_Template_Loader;
         $max_number_pages = ceil($bookings_max_number/$limit);
-        
         ob_start();
         if($ajax_out){
-        
+
+            // MRJ
+            // Change the templates to the plugin's
+            $mrj_template_loader = new Mrj_Global_Guest_Commission_Template_Loader;
             foreach ($ajax_out as $key => $value) {
                 if ( isset($_POST['dashboard_type']) && $_POST['dashboard_type'] == 'user' ) {
                     $template_loader->set_template_data( $value )->get_template_part( 'booking/content-user-booking' );      
                 } else {
-                    $template_loader->set_template_data( $value )->get_template_part( 'booking/content-booking' );      
+                    $mrj_template_loader->set_template_data( $value )->get_template_part( 'booking/content-booking' );
                 }
                 
             }
@@ -1749,16 +1751,6 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
 
     }
 
-    /**
-     * MRJ Test function
-     */
-    public static function tester(){
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-    }
-
 
     /**
     * Calculate price
@@ -1786,10 +1778,6 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
         // get normal prices from listeo listing settings
         $normal_price = (float) get_post_meta ( $listing_id, '_normal_price', true);
         $weekend_price = (float)  get_post_meta ( $listing_id, '_weekday_price', true);
-        // MRJ
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log("normal_price: " . $normal_price);
-        // MRJEND
 
         if(empty($weekend_price)){
             
@@ -1930,11 +1918,8 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
         }
         
         $price += $reservation_price + $services_price;
-        // MRJ
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log("Price in rental section: " . $price);
-        // MRJ END
 
+        
         //coupon
         if(isset($coupon) && !empty($coupon)){
             $wc_coupon = new WC_Coupon($coupon);
@@ -2119,37 +2104,6 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
         $options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
         $pctcommission = (int) $options['percentage'];
         $price  = $price + ($price * ($pctcommission / 100));
-        return $price;
-    }
-
-    /**
-     * MRJ
-     * Define a filter to modify the value calculate price returns and uplift it by the defined percentage
-     */
-    public static function mrjgcc_modify_calculate_price($price, $listing_id, $date_start, $date_end, $multiply, $services){
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-        $options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
-        $pctcommission = (int) $options['percentage'];
-        error_log("IN PRICE MODIFY");
-        error_log("Price in: " . $price);
-        $price  = $price + ($price * ($pctcommission / 100));
-        error_log("Price out: " . $price);
-        error_log($pctcommission);
         return $price;
     } 
 
@@ -2572,21 +2526,6 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar {
                             $price = self :: calculate_price( $data['listing_id'],  $data['date_start'], $data['date_end'], $multiply, $services, $coupon   );
                             $price_before_coupons = self :: calculate_price( $data['listing_id'], $data['date_start'], $data['date_end'], $multiply, $services, ''   );
 
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
-                            
-                            // When here, price will be uplifted by whatever the % guest commission is, so we must subtract
-                            
-            				//$options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
-            				//$pctcommission = (int) $options['percentage'];
-            				//$starting_price = ($price / (1 + $pctcommission / 100));
-            				//$price = $starting_price;
-                            error_log($price);
 
                         $booking_id = self :: insert_booking ( array (
                             'bookings_author'      => $_user_id,
@@ -3053,9 +2992,9 @@ $values = false;
             $data['_hour_end'] = $hour_end;
         }
 
-        error_log(json_encode($data));
 
         //MRJ
+        error_log("using own template here");
         $mrj_template_loader = new Mrj_Global_Guest_Commission_Template_Loader;
         $mrj_template_loader->set_template_data($data)->get_template_part('booking'); 
  
@@ -3158,7 +3097,6 @@ $values = false;
      */
     public static function listeo_core_dashboard_bookings( ) {
     
-          
         $users = new Listeo_Core_Users;
         
         $listings = $users->get_agent_listings('',0,-1);
@@ -3177,8 +3115,8 @@ $values = false;
         }
         $bookings = self :: get_newest_bookings($args,$limit );
         ob_start();
-        $template_loader = new Listeo_Core_Template_Loader;
-        $template_loader->set_template_data( 
+        $mrj_template_loader = new Mrj_Global_Guest_Commission_Template_Loader;
+        $mrj_template_loader->set_template_data( 
             array( 
                 'message' => '',
                 'bookings' => $bookings,

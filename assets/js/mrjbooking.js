@@ -1161,7 +1161,7 @@ if ( $( "#booking-date-range" ).length ) {
 		
 		// preparing data for ajax
 		var ajax_data = {
-			'action': 'listeo_bookings_manage', 
+			'action': 'mrjgcc_listeo_bookings_manage', 
 			'date_start' : startDataSql,
 			'date_end' : endDataSql,
 			'listing_id' : $('#listing_id').val(),
