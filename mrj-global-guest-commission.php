@@ -12,41 +12,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-//function override_booking_content_template( $template ) {
-//    error_log("in template override");
-//    // When an owner is logged on and looks at the my-bookings page, we want all of them shown with prices less whatever the 
-//    // guest commission is. This is because owners should see their bookings without the fee that guests paid for the site's commission.
-//    // Note, implemented this way, all of an owners bookings will be shown assuming that commission was paid at the rate the site's commission
-//    // is currently set at. If bookings were made and the commission since adjusted, then all bookings will be shown with the current commission
-//    // removed. Therefore, the plugin should be installed and the commission set and not subsquently changed. 
-//    //
-//    // This can be changed but that would mean saving the commission paid somewhere, by altering the booking table or by keeping a separate record
-//    // elsewhere. Not possible to do it in the given time but possible improvement.
-//
-//    if ( is_page( 'bookings')) {
-//        error_log(plugin_dir_path( __FILE__ ) . '/templates/booking/content-booking.php');
-//    
-//        $user = wp_get_current_user();
-//        $user_roles = $user->roles;
-//
-//        // Check if the user has the role of "Owner"
-//            if ( !in_array( 'owner', $user_roles ) ) {
-//            return $template;
-//        }
-//
-//        // Check if the file exists in the plugin directory
-//        if ( file_exists( plugin_dir_path( __FILE__ ) . '/templates/dashboard-bookings.php' ) ) {
-//            // Return the path to the custom template file in the plugin directory
-//            return plugin_dir_path( __FILE__ ) . '/templates/dashboard-bookings.php';
-//        } else {
-//            error_log("Trouble finding template in plugin main file at " . __LINE__);
-//        }
-//    }
-//    return $template;
-//}
-//add_filter( 'template_include', 'override_booking_content_template' );
-
-
+if ( ! class_exists( 'Gamajo_Template_Loader' ) ) {
+	include_once( 'includes/class-gamajo-template-loader.php' );
+    error_log("LOADING");
+}
 
 function mrjgcc_enqueue_scripts() {
     wp_dequeue_script( 'listeo_core-bookings');
