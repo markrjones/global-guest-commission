@@ -12,11 +12,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( ! class_exists( 'Gamajo_Template_Loader' ) ) {
-	include_once( 'includes/class-gamajo-template-loader.php' );
-    error_log("LOADING");
-}
-
 function mrjgcc_enqueue_scripts() {
     wp_dequeue_script( 'listeo_core-bookings');
     wp_deregister_script( 'listeo_core-bookings' );
