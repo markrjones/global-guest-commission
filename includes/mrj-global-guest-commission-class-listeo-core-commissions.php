@@ -191,6 +191,41 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 		return ob_get_clean();
 	}	
 
+	public function calculate_totals($args){
+
+		if(!isset($args['status'])) { $args['status'] = 'all'; }
+		
+		$q = array(
+			'user_id' => $args['user_id'],
+			'status' => $args['status']
+		);
+		
+		$total_earnings = 0;
+		$commissions_ids = $this->get_commissions( $q );
+		$commissions = array();
+		foreach ($commissions_ids as $id) {
+			$commissions[$id] = $this->get_commission($id);
+		}
+		
+		foreach ($commissions as $commission) {
+			$order = wc_get_order( $commission['order_id'] );
+			if($order){
+			
+		
+			$total = $order->get_total();
+
+			// MRJ - Adjust the order total, deduct guest commission
+			$options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
+			$guest_commission_rate = (float) $options['percentage'];
+			$total = $total / (1 + $guest_commission_rate / 100);
+			// MRJ END
+			
+			$earning = $total - $commission['amount'];
+			$total_earnings = $total_earnings + $earning;
+			}
+		}
+		return $total_earnings;
+	}
 
 
 
