@@ -3,7 +3,7 @@
    Plugin Name: Global Guest Commission
    Plugin URI: 
    description: Applies a % commission fee to all bookings.
-   Version: 0.5
+   Version: 0.6
    Author: Mark Jones
    Author URI: https://devlisteo.ownersclub.eu
    */

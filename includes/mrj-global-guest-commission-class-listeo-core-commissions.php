@@ -132,14 +132,66 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 		$args['type'] = "percentage";	
 
 		$commission_id = $this->insert_commission( $args );
-        error_log("comm id");
-        error_log($commission_id);
 		if($commission_id){
 			$order->add_meta_data( '_listeo_commissions_id', $commission_id, true );
 			$order->add_meta_data( '_listeo_commissions_processed', 'yes', true );
 	        $order->save_meta_data();
 		}
 		// Mark commissions as processed
-		
+
 	}
+
+	/**
+	 * User wallet page shortcode
+	 */
+	public function listeo_wallet( $atts ) {
+
+		if ( ! is_user_logged_in() ) {
+			return __( 'You need to be signed in to access your wallet.', 'listeo_core' );
+		}
+
+		extract( shortcode_atts( array(
+			//'posts_per_page' => '25',
+		), $atts ) );
+
+		$commissions_ids = $this->get_commissions( array( 'user_id'=>get_current_user_id(),'status' => 'all' ) );
+		$commissions_count = $this->count_commissions(array( 'user_id'=>get_current_user_id(),'status' => 'all'  ) );
+		
+		$earnings_total = $this->calculate_totals(array( 'user_id'=>get_current_user_id(), 'status' => 'all' ) );
+		
+		$commissions = array();
+		foreach ($commissions_ids as $id) {
+			$commissions[$id] = $this->get_commission($id);
+		}
+
+
+		$payouts_class = new Listeo_Core_Payouts;
+		$payouts_ids = $payouts_class->get_payouts( array( 'user_id'=>get_current_user_id(), 'status' => 'all'  ) );
+		
+		$payouts = array();
+		$total_earnings_ever = 0;
+		foreach ($payouts_ids as $id) {
+			$payouts[$id] = $payouts_class->get_payout($id);
+			//$total_earnings_ever = (float) $total_earnings_ever + $payouts[$id]['amount'];
+
+		}
+
+		ob_start();
+		$mrj_template_loader = new Mrj_Global_Guest_Commission_Template_Loader;		
+		$mrj_template_loader->set_template_data( 
+			array( 
+				'commissions' => $commissions,
+				'total_orders' => $commissions_count,
+				'earnings_total' => $earnings_total,
+				//'total_earnings_ever' => $total_earnings_ever,
+				'payouts' => $payouts,
+			) )->get_template_part( 'account/wallet' ); 
+
+
+		return ob_get_clean();
+	}	
+
+
+
+
 }
