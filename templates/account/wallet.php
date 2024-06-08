@@ -100,6 +100,13 @@ if (get_option('listeo_stripe_connect_account_type') == 'standard') {
 			$order = wc_get_order($commission['order_id']);
 			if ($order) {
 				$total = $order->get_total();
+
+				// MRJ - Adjust the order total, deduct guest commission
+ 				$options = get_option( 'mrjgcc_plugin_options', array( "title" => "Booking fee", "percentage" => 5 ));
+				$guest_commission_rate = (float) $options['percentage'];
+				$total = $total / (1 + $guest_commission_rate / 100);
+				// MRJ END
+			
 				$earning = (float) $total - $commission['amount'];
 				$balance = $balance + $earning;
 			}
