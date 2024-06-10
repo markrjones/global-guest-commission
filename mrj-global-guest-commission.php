@@ -24,8 +24,10 @@ add_action( 'wp_enqueue_scripts', 'mrjgcc_enqueue_scripts', 999 );
 include( 'includes/mrj-global-guest-commission-class-listeo-core-bookings-calendar.php' );
 include( 'includes/mrj-global-guest-commission-class-template-loader.php');
 include( 'includes/mrj-global-guest-commission-class-listeo-core-commissions.php');
+include( 'includes/mrj-global-guest-commission-class-listeo-core-payouts.php');
 
 $my_commissions = new Mrj_Global_Guest_Commission_Listeo_Core_Commissions();
+$my_payouts = new Mrj_Global_Guest_Commission_Listeo_Core_Payouts();
 
 define( 'MRJ_GLOBAL_GUEST_COMMISSION_PATH', plugin_dir_path( __FILE__ ) );
 
@@ -49,6 +51,21 @@ function mrjgcc_create_menu() {
         'dashicons-money-alt', 99 );
             
 }
+
+/**
+ * Listeo puts "Commissions" on the admin sidebar from where commissions are managed. We need our own version
+ * of that to deal with the figures that are displayed. This is a faff but the problem is that throughout the code
+ * Listeo gets the order total. We have to leave the order total at the amount the guest paid, it becomes the single
+ * place where the admin can see what the guest actually paid. We therefore need to fiddle with the numbers in 
+ * multiple places. This code removes the admin menu that Listeo creates and when deleted it leaves the one we
+ * created to do the job.
+ */
+add_action( 'admin_init', 'remove_listeo_commissions_admin_menu' );
+function remove_listeo_commissions_admin_menu() {
+    remove_menu_page('listeo_payouts');
+}
+
+// 
 
 add_action('admin_init', 'mrjgcc_plugin_admin_init');
 function mrjgcc_plugin_admin_init(){

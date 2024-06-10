@@ -38,8 +38,8 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
         add_action( 'woocommerce_order_status_changed', array( $this, 'a_order_status_change' ), 9, 3 );
 		// add_action( 'woocommerce_refund_created', array( $this, 'register_commission_refund' ) );
 		
+		// re add overrides parent to use this version of the function
 		add_shortcode( 'listeo_wallet', array( $this, 'listeo_wallet' ) );
-
 		
 	}
 
@@ -145,7 +145,7 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 	 * User wallet page shortcode
 	 */
 	public function listeo_wallet( $atts ) {
-
+		error_log("listeo_wallet - Extended");
 		if ( ! is_user_logged_in() ) {
 			return __( 'You need to be signed in to access your wallet.', 'listeo_core' );
 		}
@@ -192,7 +192,7 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 	}	
 
 	public function calculate_totals($args){
-
+		error_log("in mrj calc totals");
 		if(!isset($args['status'])) { $args['status'] = 'all'; }
 		
 		$q = array(
@@ -227,6 +227,174 @@ class Mrj_Global_Guest_Commission_Listeo_Core_Commissions extends Listeo_Core_Co
 		return $total_earnings;
 	}
 
-
-
 }
+
+if ( ! class_exists( 'WP_List_Table' ) ) {
+    require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+}
+
+if ( ! class_exists( 'Mrj_Global_Guest_Commission_Listeo_Balances_List_Table' ) ) {
+    /**
+     *
+     *
+     * @class class.yith-commissions-list-table
+     * @package    Yithemes
+     * @since      Version 1.0.0
+     * @author     Your Inspiration Themes
+     *
+     */
+    class Mrj_Global_Guest_Commission_Listeo_Balances_List_Table extends WP_List_Table {
+    /** Class constructor */
+        public function __construct() {
+
+            parent::__construct( [
+                'singular' => __( 'User Balance', 'listeo_core' ), // singular name of the listed records
+                'plural'   => __( 'Users Balance', 'listeo_core' ), // plural name of the listed records
+                'ajax'     => false // does this table support ajax?
+            ] );
+
+        }
+
+
+        /**
+         * Returns columns available in table
+         *
+         * @return array Array of columns of the table
+         * @since 1.0.0
+         */
+        public function get_columns() {
+            $columns = array(
+                    'user_id'   => __( 'User ID', 'listeo_core' ),
+                    'user_name' => __( 'User Name', 'listeo_core' ),
+                    'balance'   => __( 'Balance to pay', 'listeo_core' ),
+                    'orders'    => __( 'Orders counter', 'listeo_core' ),
+                    'actions'      => __( 'Actions', 'listeo_core' ),
+                
+            );
+
+            return $columns;
+        }
+
+        public function prepare_items() {            
+
+                $columns = $this->get_columns();
+                $hidden = $this->get_hidden_columns();
+                $sortable = $this->get_sortable_columns();
+                
+                $data = $this->table_data();
+                usort( $data, array( &$this, 'sort_data' ) );
+                
+                $perPage = 8;
+                
+                $currentPage = $this->get_pagenum();
+                $totalItems = count($data);
+                
+                $this->set_pagination_args( array(
+                    'total_items' => $totalItems,
+                    'per_page'    => $perPage
+                ) );
+                
+
+				error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
+				error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
+				error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);error_log(__FILE__ . ' ' . __LINE__);
+				error_log(json_encode($data));
+                $data = array_slice($data,(($currentPage-1)*$perPage),$perPage);
+                
+                $this->_column_headers = array($columns, $hidden, $sortable);
+                $this->items = $data;
+
+
+        }
+
+        /**
+        * Define which columns are hidden
+         *
+         * @return Array
+         */
+        public function get_hidden_columns() {
+            return array();
+        }
+
+         /**
+         * Get the table data
+         *
+         * @return Array
+         */
+        private function table_data() {
+
+            $data = array();
+
+            $args = array(
+                //'role'           => 'owner',
+                'fields'         => 'all',
+            );
+            $user_query = new WP_User_Query( $args );
+            $commission = new Mrj_Global_Guest_Commission_Listeo_Core_Commissions;
+            if ( ! empty( $user_query->get_results() ) ) {
+                foreach ( $user_query->get_results() as $user ) {
+                    
+                    $balance = $commission->calculate_totals( array( 'user_id'=> $user->ID,'status' => 'unpaid' ) );
+                    $orders =  $commission->get_commissions( array( 'user_id'=> $user->ID ) );
+                    if($balance>0){
+                       $data[] = array(
+                        'user_id' => $user->ID,
+                        'user_name' => $user->display_name,
+                        'balance' => $balance,
+                        'orders' => $orders,
+                        ); 
+                    }
+                    
+                  
+                }
+            } 
+            return $data;
+        }
+         /**
+         * Define what data to show on each column of the table
+         *
+         * @param  Array $item        Data
+         * @param  String $column_name - Current column name
+         *
+         * @return Mixed
+         */
+        public function column_default( $item, $column_name )
+        {
+            switch( $column_name ) {
+                case 'user_id':
+                    return $item[ $column_name ];
+                break;
+                
+                case 'balance':
+                    if(function_exists('wc_price')) {
+                        echo wc_price($item[ $column_name ]);
+                    } else { echo $item[ $column_name ]; };
+                break;
+                
+                case 'user_name':
+                    return '<a href="'.esc_url( get_author_posts_url($item['user_id'])).'">'.$item[ $column_name ].'</a>';
+                break;
+
+                case 'orders':
+                    echo count($item['orders']);
+                break;
+                
+                case 'actions':
+                $url = admin_url( 'admin.php?page=listeo_payouts_mrj');
+                
+                $payout_url = esc_url( add_query_arg( 'make_payout', $item['user_id'], $url ) );
+               
+                printf( '<a class="button-primary view" href="%1$s" data-tip="%2$s">%2$s</a>', $payout_url, __( 'Make Payout', 'listeo_core' ) );
+                break;
+
+                default:
+                    return print_r( $item, true ) ;
+            }
+        }
+        function no_items() {
+            _e( 'No users found.','listeo_core' );
+        }
+
+    }
+}
+

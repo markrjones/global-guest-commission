@@ -74,8 +74,6 @@ class Mrj_Base_Widget extends WP_Widget
 		add_action('switch_theme', array($this, 'flush_widget_cache'));
 	}
 
-
-
 	/**
 	 * get_cached_widget function.
 	 */
@@ -240,8 +238,6 @@ class Mrj_Core_Booking_Widget extends Mrj_Base_Widget
 	 */
 	public function __construct()
 	{
-		error_log("In my widget's construct");
-		//error_log(__FILE__ . ' ' . __LINE__);		// create object responsible for bookings
 		//$this->bookings = new Listeo_Core_Bookings_Calendar;
 		$this->bookings = new Mrj_Global_Guest_Commission_Listeo_Core_Bookings_Calendar;
 		// Above gives access to modified ajax check_avaliabity that returns the guest commission
